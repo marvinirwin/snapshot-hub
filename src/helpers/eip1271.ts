@@ -70,6 +70,7 @@ export async function isValidSignature(
 ): Promise<boolean> {
   let returnValue;
   try {
+    // @ts-ignore
     returnValue = await new Contract(address, abi, provider).isValidSignature(
       utils.arrayify(data),
       sig
