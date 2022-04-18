@@ -53,6 +53,11 @@ export async function verify(body): Promise<any> {
     if (!isValidPeriod) return Promise.reject('invalid voting period');
   }
 
+  if (space.voting?.type) {
+    if (msg.payload.type !== space.voting.type)
+      return Promise.reject('invalid voting type');
+  }
+
   try {
     const validationName = space.validation?.name || 'basic';
     const validationParams = space.validation?.params || {};
@@ -118,14 +123,17 @@ export async function action(body, ipfs, receipt, id): Promise<void> {
     created,
     space,
     network,
+    symbol: spaceSettings?.symbol || '',
     type: msg.payload.type || 'single-choice',
     strategies,
     plugins,
     title: msg.payload.name,
     body: msg.payload.body,
+    discussion: msg.payload.discussion || '',
     choices: JSON.stringify(msg.payload.choices),
     start: parseInt(msg.payload.start || '0'),
     end: parseInt(msg.payload.end || '0'),
+    quorum: spaceSettings?.voting?.quorum || 0,
     snapshot: proposalSnapshot || 0,
     scores: JSON.stringify([]),
     scores_by_strategy: JSON.stringify([]),
